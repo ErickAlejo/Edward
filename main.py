@@ -19,7 +19,7 @@ def get_Data(file_arr,command_exec):
 
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(file_arr[i],username='admin',password='S0m0s_2021')
+            client.connect(file_arr[i],username='admin',password='pass')
         except TimeoutError:
             print("Error")
             continue
