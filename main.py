@@ -1,24 +1,43 @@
+from array import array
+from lib2to3.pytree import type_repr
+from os import strerror
 import paramiko
 
-
+#Open and get Data
 def open_File():
-    file = open("ips.txt","r")
-    file_raw = file.read()
-    file_arr = file_raw.split()
+    file_readable = open("ips.txt","r")
+    file_txt = str(file_readable.read())
+    file_arr = file_txt.split()
     return file_arr
 
-def get_Data(arr_data):
-    for i in arr_data:
+#Backend
+
+def get_Data(file_arr,command_exec):
+    
+    for i in range(len(file_arr)):
         try:
 
-            ssh = paramiko.SSHClient()
-            ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            ssh.connect(file_arr[i],"admin","pass")
-        except TimeOutError:
-            print("Dispositivo : ",file_arr[i]," TimeOut")
+            client = paramiko.SSHClient()
+            client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            client.connect(file_arr[i],username='admin',password='S0m0s_2021')
+        except TimeoutError:
+            print("Error")
             continue
-        stdin, stdout, stderr = ssh.exec_command("system routerboard pr")
-        print(stdout.read().decode("ascii").strip("\n"))
-        ssh.close()
+        stdin, stdout, stderr = client.exec_command(command_exec)
+        for line in stdout:
+            data_raw = stdout.read().decode("ascii").strip("\n")
+            data_arr = data_raw.split()
+            print(data_arr,"\n")
+            client.close()
 
-def get_Data(open_File())
+def main():
+    print("\033[1;32m","\"Sempre parece imposible hasta que se hace -\"")
+    print("\033[1;37m")
+    command_exec = str(input("Por favor digite el comando : "))
+    if (command_exec === "system reset-configuration"):
+        print("No se puede")
+        main()
+    else:
+        get_Data(open_File(),command_exec)
+
+main()
