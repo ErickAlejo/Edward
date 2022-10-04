@@ -3,41 +3,41 @@ from lib2to3.pytree import type_repr
 from os import strerror
 import paramiko
 
-#Open and get Data
+    #Open files
 def open_File():
-    file_readable = open("ips.txt","r")
-    file_txt = str(file_readable.read())
-    file_arr = file_txt.split()
-    return file_arr
+    file = open("ips.txt","r")
+    file_output = str(file.read())
+    file_data = file_output.split()
+    return file_data
 
-#Backend
 
-def get_Data(file_arr,command_exec):
-    
-    for i in range(len(file_arr)):
+    #Get Data
+def get_Data(file_data,command_exec):
+    #Iter on the file and pass command
+    for i in range(len(file_data)):
+        file_new = open(file_data[i],"w")
+        #Connect to SSH through mikrotik
         try:
-
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(file_arr[i],username='admin',password='pass')
+            client.connect(file_data[i],username='admin',password='S0m0s_2021')
         except TimeoutError:
             print("Error")
             continue
         stdin, stdout, stderr = client.exec_command(command_exec)
+        #Iter on output and save file
         for line in stdout:
             data_raw = stdout.read().decode("ascii").strip("\n")
-            data_arr = data_raw.split()
-            print(data_arr,"\n")
+            data_trans = str(data_raw)
+            file_new.write(data_trans)
             client.close()
 
+    #Function Main
 def main():
     print("\033[1;32m","\"Sempre parece imposible hasta que se hace -\"")
     print("\033[1;37m")
-    command_exec = str(input("Por favor digite el comando : "))
-    if (command_exec === "system reset-configuration"):
-        print("No se puede")
-        main()
-    else:
-        get_Data(open_File(),command_exec)
+    command_exec = str(input("Command ⛏ :  "))
+    print("\n")
+    get_Data(open_File(),command_exec)
 
 main()
