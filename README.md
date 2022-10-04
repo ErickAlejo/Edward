@@ -1,2 +1,10 @@
-# script_ssh_mikrotik
-ssh mikrotik with Paramiko &amp; Pandas
+# Script /w paramiko to SSH 
+
+***Libraries importants*** on the script :
+ - *array         (create by script)*
+ - *type_repr (create by script)*
+ - *strerror     (create by script)*
+ - *paramiko  (most important)*
+
+***How it work ?***
+You only need push IP's on the file ***ips.txt*** and then write the command you need and press **Enter**, happy hack!
