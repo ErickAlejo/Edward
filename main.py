@@ -3,15 +3,22 @@ from lib2to3.pytree import type_repr
 from logging import error
 from os import strerror
 import paramiko
+import pandas as pd
 
-    #Open files
+#Open files
 def open_File():
     file = open("ips.txt","r")
     file_output = str(file.read())
     file_data = file_output.split(",")
     return file_data
 
-    #Get Data
+def open_file_excel():
+    data = pd.read_excel("data/info.xlsx",sheet_name="Hoja1")
+    data2 = data[["ips"]]
+    arr = data2.loc[1]
+    arr2 = [arr]
+    print(arr2)
+#Get Data
 def get_Data(file_data,command_exec):
     #Iter on the file and pass command
     for i in range(len(file_data)):
@@ -41,4 +48,5 @@ def main():
         print("\n")
         print("Cancel ✘ ")
 
-main()
+open_file_excel()
+#main()
