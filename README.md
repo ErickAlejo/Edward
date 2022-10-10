@@ -1,9 +1,7 @@
 # Script /w paramiko to SSH 
 
 ***Libraries importants*** on the script :
- - *array         (create by script)*
- - *type_repr (create by script)*
- - *strerror     (create by script)*
+ - *numpy     (create by script)*
  - *paramiko  (most important)*
 
 # How it work
