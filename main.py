@@ -15,7 +15,7 @@ def open_file_txt():
     #Open file txt
     file_add = open("ips.txt","r")
     file_value = file_add.read()
-    file_value_to_list = file_value.split(",")
+    file_value_to_list = file_value.split("\n")
     return file_value_to_list
 
 def get_Data(value_to_arr,command):
@@ -51,7 +51,7 @@ def get_Data(value_to_arr,command):
 
 def main():
     try:
-        command = str(input("[🪶  Command ] "))
+        command = str(input("🪶  Command : "))
         get_Data(open_file_txt(),command)
     except KeyboardInterrupt:
         print("\n")
