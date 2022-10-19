@@ -1,6 +1,7 @@
 import paramiko
 import pandas as pd
 import numpy as np
+import time 
 
 def open_file_excel():
     #Open file excel
@@ -26,7 +27,7 @@ def get_Data(value_to_arr,command):
             create_file = open(dir_output.format(value_to_arr[i]),"w+")
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(value_to_arr[i],username='admin',password='')
+            client.connect(value_to_arr[i],username='admin',password='S0m0s_2021')
         except TimeoutError:
             print("Error")
             print("")
@@ -35,7 +36,15 @@ def get_Data(value_to_arr,command):
             print("Error with Directory")
             print("")
             break
-        stdin, stdout, stderr = client.exec_command(command)
+        if command.find("speed-test"):
+            stdin, stdout, stderr = client.exec_command(command)
+            time.sleep(5)
+        elif command.find("monitor"):
+            time.sleep(3)
+            stdin, stdout, stderr = client.exec_command(command)
+        else:
+            stdin, stdout, stderr = client.exec_command(command)
+        
         for line in stdout:
             data_buffer = stdout.read().decode("ascii").replace("\n","")
             data_to_str = str(data_buffer)
@@ -43,15 +52,15 @@ def get_Data(value_to_arr,command):
             create_file.write("")
             create_file.close()
             client.close()
-    command_repeat = input("🪶  Again [y/n] : ")
+    command_repeat = input("🪶  Again y/n : ")
     if command_repeat == "y":
         main()
     else:
-        return False
+        print("🪶  Cancel ✘ ")
 
 def main():
     try:
-        command = str(input("[🪶  Command ] "))
+        command = str(input("🪶  Command : "))
         get_Data(open_file_txt(),command)
     except KeyboardInterrupt:
         print("\n")
