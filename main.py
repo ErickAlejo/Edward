@@ -78,7 +78,7 @@ def get_Data(value_to_arr,command):
             create_file = open(dir_output.format(value_to_arr[i]),"w+")
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-            client.connect(value_to_arr[i],username='admin',password='S0m0s_2021S0m0s_2021')
+            client.connect(value_to_arr[i],username='admin',password='')
         except TimeoutError:
             print("Error")
             print("")
