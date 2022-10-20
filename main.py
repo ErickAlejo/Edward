@@ -14,12 +14,13 @@ def open_file_excel():
     value_to_arr = value_to_list.reshape(-1).tolist()
     return value_to_arr
 
-def open_file_txt():
-    #Open file txt
-    file_add = open("ips.txt","r")
-    file_value = file_add.read()
-    file_value_to_list = file_value.split(",")
-    return file_value_to_list
+""" def open_file_txt():
+        #Open file txt
+        file_add = open("ips.txt","r")
+        file_value = file_add.read()
+        file_value_to_list = file_value.split(",")
+        return file_value_to_list
+"""
 
 def create_string_to_vector (cadena,area_name,area_border,area_cost,area_name2,area_border2,area_cost2): 
     cadena2 = cadena.split()
@@ -74,8 +75,6 @@ def get_Data(value_to_arr,command):
     for i in range(len(value_to_arr)):
         #Connect to SSH 
         try:
-            dir_output = "output_export/{}.txt"
-            create_file = open(dir_output.format(value_to_arr[i]),"w+")
             client = paramiko.SSHClient()
             client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
             client.connect(value_to_arr[i],username='admin',password='S0m0s_2021S0m0s_2021')
@@ -100,9 +99,6 @@ def get_Data(value_to_arr,command):
             data_buffer = stdout.read().decode("ascii").replace("\n","")
             data_to_str = str(data_buffer)
             create_string_to_vector(data_buffer,area_name,area_border,area_cost,area_name2,area_border2,area_cost2)
-            create_file.write(data_to_str)
-            create_file.write("")
-            create_file.close()
             client.close()
     command_repeat = input("🪶  Again y/n : ")
     if command_repeat == "y":
