@@ -1,10 +1,4 @@
-# Script /w paramiko to SSH 
-
-***Libraries importants*** on the script :
- - *numpy     (create by script)*
- - *paramiko  (most important)*
-
+# Script with paramiko to automate task on ssh
 # How it work
-You only need push IP's on the file ***ips.txt*** and then write the command you need and press **Enter**, happy hack!
-
+You only need push multiples IP's on a file and give to script and a command to execute. Happy Hacking :)
 ***Note important ! :*** verify that your command produces output that the script can capture
