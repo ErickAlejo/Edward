@@ -1,9 +1,6 @@
-from os import remove, strerror
-from sys import stdin, stdout
 import paramiko
 import pandas as pd
 import numpy as np
-import time 
 
 
 class files:
