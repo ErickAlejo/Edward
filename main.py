@@ -4,10 +4,11 @@ import numpy as np
 
 
 class files:
-    def __init__(self,path,output):
+    def __init__(self,path):
+        self.path = path
         """ File Class give somes variables, route of file and route of output (path,output)  """
         
-    def openFileExcel():
+    def openFileExcel(self):
         sheet = pd.read_excel("output_export/info.xlsx",sheet_name="Hoja2")
         sheetCol = sheet[["ips"]]
         sheetList = sheetCol.values.tolist()
@@ -15,8 +16,9 @@ class files:
         sheetVal = sheetArr.reshape(-1).tolist()
         return sheetVal
 
-    def openFileTxt():
-            fileOpen = open("ips.txt","r")
+    def openFileTxt(self):
+            filePath = "{}.txt"
+            fileOpen = open(format(self.path),"r")
             fileRead = fileOpen.read()
             fileData= fileRead.split(",")
             return fileData
@@ -28,15 +30,22 @@ class getAccess:
     def connectToIp(self,ip,command):
         for i in range(len(ip)): 
             try:
+                saveData = open(f"{ip[i]}.txt","w+")
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(ip[i], username='admin', password='', timeout=3)
+                client.connect(ip[i], username='admin', password='S0m0s_2021', timeout=3)
             except TimeoutError:
                 print(f"Time out ip : {ip[i]}")
                 continue
             stdin,stdout,strerror = client.exec_command(command)
             for line in stdout:
                 dataBare = stdout.read().decode("ascii").replace("\n","")
-                dataToStr = str(dataBare)
+                
                 client.close()
             
+def main():
+    path = str(input("Path IP's : "))
+    command = input("$ ")
+    getAccess.connectToIp(files(path).openFileTxt(),command)
+
+main()
