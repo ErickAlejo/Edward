@@ -1,12 +1,13 @@
 import paramiko
 import pandas as pd
 import numpy as np
+from os import environ as env
 
 
-class files:
+class getFiles:
     def __init__(self,path):
         self.path = path
-        """ File Class give somes variables, route of file and route of output (path,output)  """
+        """ Setting vars : path to save file"""
         
     def openFileExcel(self):
         sheet = pd.read_excel("output_export/info.xlsx",sheet_name="Hoja2")
@@ -23,30 +24,33 @@ class files:
             fileData= fileRead.split(",")
             return fileData
 
-class getAccess:
-    def __init__(self,command):
+class getConnect:
+    def __init__(self,command,password):
         self.command = command
-        """ getAcc get data of files and a command to execute a multiple IPs """
+        self.password = password
+        """Setting vars : command to execute and password"""
 
     def connectToIp(self,ip):
         for i in range(len(ip)): 
             try:
-                saveData = open(f"{ip[i]}.txt","w+")
+                createFile = open(f"{ip[i]}.txt","w+")
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(ip[i], username='admin', password='S0m0s_2021', timeout=3)
+                client.connect(ip[i], username='admin', password=str(self.password), timeout=3)
             except TimeoutError:
-                print(f"Time out ip : {ip[i]}")
+                print(f"Time out : {ip[i]}")
                 continue
             stdin,stdout,strerror = client.exec_command(self.command)
             for line in stdout:
                 dataBare = stdout.read().decode("ascii").replace("\n","")
-                saveData.write(dataBare)
+                createFile.write(dataBare)
                 client.close()
             
 def main():
-    path = str(input("Path : "))
-    command = input("$ ")
-    getAccess(command).connectToIp(files(path).openFileTxt())
+    print(f"Welcome to ssh-script {env.get('USERNAME')}")
+    password = input("[Password] ")
+    path = str(input("[Directory] "))
+    command = input(f"[$] ")
+    getConnect(command,password).connectToIp(getFiles(path).openFileTxt())
 
 main()
