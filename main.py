@@ -24,10 +24,11 @@ class files:
             return fileData
 
 class getAccess:
-    def __init__(self,data,command):
+    def __init__(self,command):
+        self.command = command
         """ getAcc get data of files and a command to execute a multiple IPs """
 
-    def connectToIp(self,ip,command):
+    def connectToIp(self,ip):
         for i in range(len(ip)): 
             try:
                 saveData = open(f"{ip[i]}.txt","w+")
@@ -37,15 +38,15 @@ class getAccess:
             except TimeoutError:
                 print(f"Time out ip : {ip[i]}")
                 continue
-            stdin,stdout,strerror = client.exec_command(command)
+            stdin,stdout,strerror = client.exec_command(self.command)
             for line in stdout:
                 dataBare = stdout.read().decode("ascii").replace("\n","")
-                
+                saveData.write(dataBare)
                 client.close()
             
 def main():
-    path = str(input("Path IP's : "))
+    path = str(input("Path : "))
     command = input("$ ")
-    getAccess.connectToIp(files(path).openFileTxt(),command)
+    getAccess(command).connectToIp(files(path).openFileTxt())
 
 main()
