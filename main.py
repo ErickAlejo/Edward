@@ -1,7 +1,7 @@
 import paramiko
 import pandas as pd
 import numpy as np
-from os import environ as env
+import os
 
 
 class getFiles:
@@ -18,11 +18,10 @@ class getFiles:
         return sheetVal
 
     def openFileTxt(self):
-            filePath = "{}.txt"
-            fileOpen = open(format(self.path),"r")
-            fileRead = fileOpen.read()
-            fileData= fileRead.split(",")
-            return fileData
+        fileOpen = open(format(self.path),"r")
+        fileRead = fileOpen.read()
+        fileData= fileRead.split(",")
+        return fileData
 
 class getConnect:
     def __init__(self,command,password):
@@ -33,12 +32,20 @@ class getConnect:
     def connectToIp(self,ip):
         for i in range(len(ip)): 
             try:
-                createFile = open(f"{ip[i]}.txt","w+")
+                export = "export"
+                exist_file = os.path.exists(export)
+                if exist_file :
+                    filePath = export + "/{}.txt"
+                    createFile = open(filePath.format(ip[i]),"w+")
+                else :
+                    os.mkdir(export)
+                    filePath = export + "/{}.txt"
+                    createFile = open(filePath.format(ip[i]),"w+")
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(ip[i], username='admin', password=str(self.password), timeout=3)
             except TimeoutError:
-                print(f"Time out : {ip[i]}")
+                print(f"[Timeout : {ip[i]}]")
                 continue
             stdin,stdout,strerror = client.exec_command(self.command)
             for line in stdout:
@@ -47,7 +54,7 @@ class getConnect:
                 client.close()
             
 def main():
-    print(f"Welcome to ssh-script {env.get('USERNAME')}")
+    print(f"Welcome to ssh-script {os.environ.get('USERNAME')}")
     password = input("[Password] ")
     path = str(input("[Directory] "))
     command = input(f"[$] ")
