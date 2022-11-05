@@ -1,7 +1,10 @@
+from gettext import find
+import os
+import time
 import paramiko
 import pandas as pd
 import numpy as np
-import os
+
 
 
 class getFiles:
@@ -47,17 +50,29 @@ class getConnect:
             except TimeoutError:
                 print(f"[Timeout : {ip[i]}]")
                 continue
-            stdin,stdout,strerror = client.exec_command(self.command)
+            if self.command.find("monitor") & self.command.find("duration"):
+                stdin,stdout,strerror = client.exec_command(self.command)
+            elif self.command.find("duration"):
+                stdin,stdout,strerror = client.exec_command(self.command)
+            else:
+                stdin,stdout,strerror = client.exec_command(self.command)
             for line in stdout:
                 dataBare = stdout.read().decode("ascii").replace("\n","")
                 createFile.write(dataBare)
+                createFile.close()
                 client.close()
-            
-def main():
-    print(f"Welcome to ssh-script {os.environ.get('USERNAME')}")
-    password = input("[Password] ")
-    path = str(input("[Directory] "))
-    command = input(f"[$] ")
+
+
+def run():
+    #setting all params necessary ...
+    print(f"Welcome to ssh-script {os.environ.get('USERNAME')} \nNo existe gran Genio, sin un toque de demencia -Seneca")
+    print("")
+    password = input("[Password] > ")
+    path = str(input("[Directory] > "))
+    print("[Set duration=seconds if your command use monitor]")
+    time.sleep(2)
+    command = input("[$] > ")
     getConnect(command,password).connectToIp(getFiles(path).openFileTxt())
 
-main()
+
+run()

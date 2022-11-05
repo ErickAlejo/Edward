@@ -1,0 +1,1 @@
+                    status: link-ok          auto-negotiation: done                      rate: 100Mbps               full-duplex: yes               advertising: 10M-half,10M-full,100M-half,100M-full  link-partner-advertising: 10M-half,10M-full,100M-half,100M-full     default-cable-setting: standard
