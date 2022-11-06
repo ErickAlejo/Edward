@@ -8,7 +8,7 @@ import numpy as np
 
 
 class getFiles:
-    def __init__(self,path):
+    def __init__(self,path:str):
         self.path = path
         """ Setting vars : path to save file"""
         
@@ -24,7 +24,7 @@ class getFiles:
         fileOpen = open(format(self.path),"r")
         fileRead = fileOpen.read()
         fileData= fileRead.split(",")
-        return fileData
+        return fileData #return a list of IPs
 
 class getConnect:
     def __init__(self,command,password):
@@ -32,7 +32,7 @@ class getConnect:
         self.password = password
         """Setting vars : command to execute and password"""
 
-    def connectToIp(self,ip):
+    def connectToIp(self,ip:list):
         for i in range(len(ip)): 
             try:
                 export = "export"
@@ -43,7 +43,7 @@ class getConnect:
                 else :
                     os.mkdir(export)
                     filePath = export + "/{}.txt"
-                    createFile = open(filePath.format(ip[i]),"w+")
+                    createFile = open(filePath.format(ip[i]),"w+") #create each file of hosts
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(ip[i], username='admin', password=str(self.password), timeout=3)
@@ -64,7 +64,6 @@ class getConnect:
 
 
 def run():
-    #setting all params necessary ...
     print(f"Welcome to ssh-script {os.environ.get('USERNAME')} \nNo existe gran Genio, sin un toque de demencia -Seneca")
     print("")
     password = input("[Password] > ")
