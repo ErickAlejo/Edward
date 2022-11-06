@@ -1,11 +1,8 @@
-from gettext import find
 import os
 import time
 import paramiko
 import pandas as pd
-import numpy as np
-
-
+from numpy import array,reshape
 
 class files:
 
@@ -27,14 +24,14 @@ class files:
 
 class setParamsSsh:
 
-    def __init__(self,command,password):
+    def __init__(self,command:str,password:str):
         self.command = command
         self.password = password
-        """command:str is the command to execute, password:str is pass to each host"""
+        """command:str is the command to execute, password:str is password to each host"""
     def connectIP(self,ip:list):
         for i in range(len(ip)): 
             try:
-                export = "export"
+                export = "data"
                 exist_file = os.path.exists(export)
                 if exist_file :
                     filePath = export + "/{}.txt"
@@ -48,7 +45,7 @@ class setParamsSsh:
                 client.connect(ip[i], username='admin', password=str(self.password), timeout=2)
             except TimeoutError:
                 print(f"[Timeout : {ip[i]}]")
-                continue
+                break
             if self.command.find("monitor") & self.command.find("duration"):
                 stdin,stdout,strerror = client.exec_command(self.command)
             elif self.command.find("duration"):
@@ -63,11 +60,9 @@ class setParamsSsh:
 
 def run():
     print(f"Welcome to ssh-script {os.environ.get('USERNAME')} \nHace falta una vida para aprender a vivir -Seneca\n")
-    password = input("[Password] > ")
+    print("Please set duration=seconds when use monitor !")
     path = str(input("[Directory] > "))
-    print("[Set duration=seconds when use monitor]")
-    time.sleep(2)
+    password = input("[Password] > ")
     command = input("[$] > ")
     setParamsSsh(command,password).connectIP(files(path).openFileTxt())
-
 run()
