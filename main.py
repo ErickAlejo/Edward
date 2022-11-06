@@ -1,68 +1,68 @@
 import os
-import time
 import paramiko
-import pandas as pd
-from numpy import array,reshape
 
-class files:
 
-    def __init__(self,path:str):
-        self.path = path
+class GetFiles:
+    """getFiles:class is used to get data of files """
+
+    def __init__(self, path):
         """ path:str is the route of all IPs"""
-    def openFileExcel(self):
-        sheet = pd.read_excel("output_export/info.xlsx",sheet_name="Hoja2")
-        sheetCol = sheet[["ips"]]
-        sheetList = sheetCol.values.tolist()
-        sheetArr = np.array(sheetList) 
-        sheetVal = sheetArr.reshape(-1).tolist()
-        return sheetVal
-    def openFileTxt(self):
-        fileOpen = open(format(self.path),"r")
-        fileRead = fileOpen.read()
-        fileData= fileRead.split(",")
-        return fileData #return a list of IPs
+        self.path = path
 
-class setParamsSsh:
+    def open_file_txt(self):
+        file_open = open(self.path, mode="r", encoding="utf-8")
+        file_read = file_open.read()
+        file_data = file_read.split(",")
+        return file_data  # return a list of IPs
 
-    def __init__(self,command:str,password:str):
+
+class SetSsh:
+    """setParamsSsh:class is used to set variables and methods for connect via SSH """
+
+    def __init__(self, command: str, password: str):
+        """command:str is the command to execute, password:str is password to each host"""
         self.command = command
         self.password = password
-        """command:str is the command to execute, password:str is password to each host"""
-    def connectIP(self,ip:list):
-        for i in range(len(ip)): 
+
+    def connect_to_ip(self, list_ips):
+        for i in range(len(list_ips)):
             try:
-                export = "data"
-                exist_file = os.path.exists(export)
-                if exist_file :
-                    filePath = export + "/{}.txt"
-                    createFile = open(filePath.format(ip[i]),"w+")
-                else :
-                    os.mkdir(export)
-                    filePath = export + "/{}.txt"
-                    createFile = open(filePath.format(ip[i]),"w+") #create each file of hosts
+                path_export = "data"
+                exist_file = os.path.exists(path_export)
+                if exist_file:
+                    file_path = path_export + "/{}.txt"
+                    create_file = open(file_path.format(
+                        list_ips[i]), "w+", encoding="utf-8")
+                else:
+                    os.mkdir(path_export)
+                    file_path = path_export + "/{}.txt"
+                    # create each file of hosts
+                    create_file = open(file_path.format(
+                        list_ips[i]), "w+", encoding="utf-8")
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(ip[i], username='admin', password=str(self.password), timeout=2)
+                client.connect(list_ips[i], username='admin',
+                               password=str(self.password), timeout=2)
             except TimeoutError:
-                print(f"[Timeout : {ip[i]}]")
+                print(f"[Timeout : {list_ips[i]}]")
+                client.close()
                 break
-            if self.command.find("monitor") & self.command.find("duration"):
-                stdin,stdout,strerror = client.exec_command(self.command)
-            elif self.command.find("duration"):
-                stdin,stdout,strerror = client.exec_command(self.command)
-            else:
-                stdin,stdout,strerror = client.exec_command(self.command)
-            for line in stdout:
-                dataBare = stdout.read().decode("ascii").replace("\n","")
-                createFile.write(dataBare)
-                createFile.close()
+            stdin, stdout, stderr = client.exec_command(self.command)
+            for i in stdout:
+                data_bare = stdout.read().decode("utf-8").replace("\n", "")
+                create_file.write(data_bare)
+                create_file.close()
                 client.close()
 
+
 def run():
-    print(f"Welcome to ssh-script {os.environ.get('USERNAME')} \nHace falta una vida para aprender a vivir -Seneca\n")
+    """run:function is used with main function to run the program """
+    print(f"Welcome {os.environ.get('USERNAME')}")
     print("Please set duration=seconds when use monitor !")
     path = str(input("[Directory] > "))
     password = input("[Password] > ")
     command = input("[$] > ")
-    setParamsSsh(command,password).connectIP(files(path).openFileTxt())
+    SetSsh(command, password).connect_to_ip(GetFiles(path).open_file_txt())
+
+
 run()
