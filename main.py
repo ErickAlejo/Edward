@@ -7,11 +7,11 @@ import numpy as np
 
 
 
-class getFiles:
+class files:
+
     def __init__(self,path:str):
         self.path = path
-        """ Setting vars : path to save file"""
-        
+        """ path:str is the route of all IPs"""
     def openFileExcel(self):
         sheet = pd.read_excel("output_export/info.xlsx",sheet_name="Hoja2")
         sheetCol = sheet[["ips"]]
@@ -19,20 +19,19 @@ class getFiles:
         sheetArr = np.array(sheetList) 
         sheetVal = sheetArr.reshape(-1).tolist()
         return sheetVal
-
     def openFileTxt(self):
         fileOpen = open(format(self.path),"r")
         fileRead = fileOpen.read()
         fileData= fileRead.split(",")
         return fileData #return a list of IPs
 
-class getConnect:
+class setParamsSsh:
+
     def __init__(self,command,password):
         self.command = command
         self.password = password
-        """Setting vars : command to execute and password"""
-
-    def connectToIp(self,ip:list):
+        """command:str is the command to execute, password:str is pass to each host"""
+    def connectIP(self,ip:list):
         for i in range(len(ip)): 
             try:
                 export = "export"
@@ -46,7 +45,7 @@ class getConnect:
                     createFile = open(filePath.format(ip[i]),"w+") #create each file of hosts
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(ip[i], username='admin', password=str(self.password), timeout=3)
+                client.connect(ip[i], username='admin', password=str(self.password), timeout=2)
             except TimeoutError:
                 print(f"[Timeout : {ip[i]}]")
                 continue
@@ -62,16 +61,13 @@ class getConnect:
                 createFile.close()
                 client.close()
 
-
 def run():
-    print(f"Welcome to ssh-script {os.environ.get('USERNAME')} \nNo existe gran Genio, sin un toque de demencia -Seneca")
-    print("")
+    print(f"Welcome to ssh-script {os.environ.get('USERNAME')} \nHace falta una vida para aprender a vivir -Seneca\n")
     password = input("[Password] > ")
     path = str(input("[Directory] > "))
-    print("[Set duration=seconds if your command use monitor]")
+    print("[Set duration=seconds when use monitor]")
     time.sleep(2)
     command = input("[$] > ")
-    getConnect(command,password).connectToIp(getFiles(path).openFileTxt())
-
+    setParamsSsh(command,password).connectIP(files(path).openFileTxt())
 
 run()
