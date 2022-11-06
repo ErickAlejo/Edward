@@ -11,10 +11,15 @@ class GetFiles:
 
     def open_file_txt(self):
         """open_file_txt:function is used explicitly to open a file"""
-        file_open = open(self.path, mode="r", encoding="utf-8")
-        file_read = file_open.read()
-        file_data = file_read.split(",")
-        return file_data  # return a list of IPs
+        try:
+            file_open = open(self.path, mode="r", encoding="utf-8")
+            file_read = file_open.read()
+            file_data = file_read.split(",")
+            return file_data  # return a list of IPs
+        except FileNotFoundError:
+            os.system('cls')
+            print("Error File not found, try again ! \n")
+            run()
 
 
 class SetSsh:
@@ -49,8 +54,13 @@ class SetSsh:
                 print(f"[Timeout : {list_ips[i]}]")
                 client.close()
                 break
+            except paramiko.ssh_exception.AuthenticationException:
+                os.system('cls')
+                print("Your password or user is failed")
+                run()
             # The command’s input and output streams are returned as Python file-like objects representing stdin, stdout, and stderr.
-            stdin, stdout, stderr = client.exec_command(self.command, timeout=3)
+            stdin, stdout, stderr = client.exec_command(
+                self.command, timeout=3)
             for i in stdout:
                 data_bare = stdout.read().decode("utf-8").replace("\n", "")
                 create_file.write(data_bare)
@@ -60,8 +70,8 @@ class SetSsh:
 
 def run():
     """run:function is used with main function to run the program """
-    print(f"Welcome {os.environ.get('USERNAME')}")
-    print("Please set duration=seconds when use monitor !\n")
+    print(f"Host : {os.environ.get('USERNAME')}")
+    print("Set duration=seconds when use monitor !\n")
     path = str(input("[Directory] > "))
     password = input("[Password] > ")
     command = input("[$] > ")
