@@ -59,8 +59,8 @@ class SetSsh:
                 print("Your password or user is failed")
                 run()
             # The command’s input and output streams are returned as Python file-like objects representing stdin, stdout, and stderr.
-            stdin, stdout, stderr = client.exec_command(
-                self.command, timeout=3)
+            for a in self.command:
+                stdin, stdout, stderr = client.exec_command(self.command[a], timeout=3)
             for i in stdout:
                 data_bare = stdout.read().decode("utf-8").replace("\n", "")
                 create_file.write(data_bare)
@@ -74,7 +74,8 @@ def run():
     print("Set duration=seconds when use monitor !\n")
     path = str(input("[Directory] > "))
     password = input("[Password] > ")
-    command = input("[$] > ")
+    raw_command = input("[$] > ")
+    command = raw_command.split()
     SetSsh(command, password).connect_to_ip(GetFiles(path).open_file_txt())
 
 
