@@ -14,7 +14,7 @@ class GetFiles:
         try:
             file_open = open(self.path, mode="r")
             file_read = file_open.read()
-            file_data = file_read.split(",")
+            file_data = file_read.split("\n")
             return file_data  # return a list of IPs
         except FileNotFoundError:
             os.system('cls')
