@@ -1,1 +1,1 @@
-// Push your ips on here.
+//Push your IPs here : xxx.xxx.xxx.xxx

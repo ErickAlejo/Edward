@@ -1,6 +1,6 @@
 import os
 import paramiko
-
+import time
 
 class GetFiles:
     """getFiles:class is used to get data of files """
@@ -12,7 +12,7 @@ class GetFiles:
     def open_file_txt(self):
         """open_file_txt:function is used explicitly to open a file"""
         try:
-            file_open = open(self.path, mode="r", encoding="utf-8")
+            file_open = open(self.path, mode="r")
             file_read = file_open.read()
             file_data = file_read.split(",")
             return file_data  # return a list of IPs
@@ -24,7 +24,6 @@ class GetFiles:
 
 class SetSsh:
     """setParamsSsh:class is used to set variables and methods for connect via SSH """
-
     def __init__(self, command: str, password: str):
         """command:str is the command to execute, password:str is password to each host"""
         self.command = command
@@ -39,13 +38,13 @@ class SetSsh:
                 if exist_file:
                     file_path = path_export + "/{}.txt"
                     create_file = open(file_path.format(
-                        list_ips[i]), "w+", encoding="utf-8")
+                        list_ips[i]), "w+")
                 else:
                     os.mkdir(path_export)
                     file_path = path_export + "/{}.txt"
                     # create each file of hosts
                     create_file = open(file_path.format(
-                        list_ips[i]), "w+", encoding="utf-8")
+                        list_ips[i]), "w+")
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(list_ips[i], username='admin',
@@ -59,10 +58,9 @@ class SetSsh:
                 print("Your password or user is failed")
                 run()
             # The command’s input and output streams are returned as Python file-like objects representing stdin, stdout, and stderr.
-            for a in self.command:
-                stdin, stdout, stderr = client.exec_command(self.command[a], timeout=3)
+            stdin, stdout, stderr = client.exec_command(self.command, timeout=3)
             for i in stdout:
-                data_bare = stdout.read().decode("utf-8").replace("\n", "")
+                data_bare = stdout.read().decode("ascii").replace("\n", "")
                 create_file.write(data_bare)
                 create_file.close()
                 client.close()
@@ -74,9 +72,7 @@ def run():
     print("Set duration=seconds when use monitor !\n")
     path = str(input("[Directory] > "))
     password = input("[Password] > ")
-    raw_command = input("[$] > ")
-    command = raw_command.split()
+    command = input("[$] > ")
     SetSsh(command, password).connect_to_ip(GetFiles(path).open_file_txt())
-
 
 run()
