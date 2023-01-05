@@ -1,1 +1,0 @@
-        board-name: LHG 60G             model: RBLHGG-60ad          revision: r2     serial-number: CF8A0C04CB71     firmware-type: ipq4000L  factory-firmware: 6.45.9  current-firmware: 6.45.9  upgrade-firmware: 6.48.6
