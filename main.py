@@ -34,7 +34,9 @@ class SetSsh:
         for i in range(len(list_ips)):
             try:
                 path_export = "data"
+                path_export_error = "errors"
                 exist_file = os.path.exists(path_export)
+                exist_file_error = os.path.exists(path_export_error)
                 if exist_file:
                     file_path = path_export + "/{}.txt"
                     create_file = open(file_path.format(
@@ -48,27 +50,26 @@ class SetSsh:
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(list_ips[i], username='admin',
-                               password=str(self.password),timeout=3)
+                               password=str(self.password),timeout=4,banner_timeout=4)
             except TimeoutError:
                 print(f"[Timeout: {list_ips[i]}]")
                 client.close()
                 continue
             except paramiko.ssh_exception.AuthenticationException:
                 os.system('cls')
-                print("Passwd failed")
+                print(f"[Password Failed: {list_ips[i]}]")
                 client.close()
                 continue
             except paramiko.ssh_exception.NoValidConnectionsError:
                 print(f"[Probably bad ports : {list_ips[i]}]")
                 continue
-            # The command’s input and output streams are returned as Python file-like objects representing stdin, stdout, and stderr.
-            stdin, stdout, stderr = client.exec_command(self.command)
+            stdin, stdout, stderr = client.exec_command(self.command, timeout=4)
             for i in stdout:
-                client.close()
                 data_bare = stdout.read().decode("ascii").replace("\n", "")
-                print(data_bare)
                 create_file.write(data_bare)
                 create_file.close()
+                client.close()
+                        
 def run():
     """run:function is used with main function to run the program """
     print(f"Host : {os.environ.get('USERNAME')}")
