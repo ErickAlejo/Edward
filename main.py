@@ -3,14 +3,14 @@ import paramiko
 import time
 
 class GetFiles:
-    """getFiles:class is used to get data of files """
+    """Class Get Files"""
 
     def __init__(self, path):
-        """ path:str is the route of all IPs"""
+        """Initialized path"""
         self.path = path
 
     def open_file_txt(self):
-        """open_file_txt:function is used explicitly to open a file"""
+        """Method to open file txt"""
         try:
             file_open = open(self.path, mode="r")
             file_read = file_open.read()
@@ -23,20 +23,21 @@ class GetFiles:
 
 
 class SetSsh:
-    """setParamsSsh:class is used to set variables and methods for connect via SSH """
+    """Class SSH """
+
     def __init__(self, command: str, password: str):
-        """command:str is the command to execute, password:str is password to each host"""
+        """Constructors Initializing vars command and password"""
         self.command = command
         self.password = password
 
+
     def connect_to_ip(self, list_ips):
-        """connect_to_ip:function is used to finally connect to a IP """
+        """Method to connect to SSH"""
         for i in range(len(list_ips)):
             try:
+                "Create a file to save the information"
                 path_export = "data"
-                path_export_error = "errors"
                 exist_file = os.path.exists(path_export)
-                exist_file_error = os.path.exists(path_export_error)
                 if exist_file:
                     file_path = path_export + "/{}.txt"
                     create_file = open(file_path.format(
@@ -47,10 +48,11 @@ class SetSsh:
                     # create each file of hosts
                     create_file = open(file_path.format(
                         list_ips[i]), "w+")
+                "Create a connection to SSH and we add a Policy Paramiko"
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(list_ips[i], username='admin',
-                               password=str(self.password),timeout=4,banner_timeout=4)
+                               password=str(self.password),banner_timeout=200)
             except TimeoutError:
                 print(f"[Timeout: {list_ips[i]}]")
                 client.close()
@@ -63,20 +65,22 @@ class SetSsh:
             except paramiko.ssh_exception.NoValidConnectionsError:
                 print(f"[Probably bad ports : {list_ips[i]}]")
                 continue
-            stdin, stdout, stderr = client.exec_command(self.command, timeout=4)
+            stdin, stdout, stderr = client.exec_command(self.command)
             for i in stdout:
                 data_bare = stdout.read().decode("ascii").replace("\n", "")
                 create_file.write(data_bare)
                 create_file.close()
                 client.close()
-                        
+
+
 def run():
-    """run:function is used with main function to run the program """
+    """Runner"""
+    
     print(f"Host : {os.environ.get('USERNAME')}")
     print("Set duration=seconds when use monitor !\n")
-    path = str(input("[Directory] > "))
-    password = input("[Password] > ")
-    command = input("[$] > ")
-    SetSsh(command,password).connect_to_ip(GetFiles(path).open_file_txt())
+    #path = str(input("[Directory] "))
+    password = input("[Password] ")
+    command = input("[$] ")
+    SetSsh(command,password).connect_to_ip(GetFiles('ips.txt').open_file_txt())
 
 run()
