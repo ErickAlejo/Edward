@@ -1,6 +1,6 @@
-import os
 import paramiko
 import time
+import os
 
 class GetFiles:
     """Class Get Files"""
@@ -30,57 +30,65 @@ class SetSsh:
         self.command = command
         self.password = password
 
-
-    def connect_to_ip(self, list_ips):
+    def connect_to_ip(self, ips_list):
         """Method to connect to SSH"""
-        for i in range(len(list_ips)):
+        for i in range(len(ips_list)):
             try:
                 "Create a file to save the information"
+                ips_error = []
                 path_export = "data"
-                exist_file = os.path.exists(path_export)
-                if exist_file:
+                path_exist_file = os.path.exists(path_export)
+                if path_exist_file:
                     file_path = path_export + "/{}.txt"
-                    create_file = open(file_path.format(
-                        list_ips[i]), "w+")
+                    file_create = open(file_path.format(
+                        ips_list[i]), "w+")
                 else:
                     os.mkdir(path_export)
                     file_path = path_export + "/{}.txt"
                     # create each file of hosts
-                    create_file = open(file_path.format(
-                        list_ips[i]), "w+")
+                    file_create = open(file_path.format(
+                        ips_list[i]), "w+")
                 "Create a connection to SSH and we add a Policy Paramiko"
                 client = paramiko.SSHClient()
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
-                client.connect(list_ips[i], username='admin',
-                               password=str(self.password),banner_timeout=200)
+                client.connect(ips_list[i], username='admin',
+                               password=str(self.password), banner_timeout=200)
             except TimeoutError:
-                print(f"[Timeout: {list_ips[i]}]")
+                print(f"[Error Timeout] : {ips_list[i]} ⚠️")
                 client.close()
                 continue
             except paramiko.ssh_exception.AuthenticationException:
                 os.system('cls')
-                print(f"[Password Failed: {list_ips[i]}]")
+                print(f"[Error Authentication] : {ips_list[i]} ⚠️")
                 client.close()
                 continue
             except paramiko.ssh_exception.NoValidConnectionsError:
-                print(f"[Probably bad ports : {list_ips[i]}]")
+                print(f"[Error Port request] : {ips_list[i]} ⚠️")
                 continue
+            except Exception as error:
+                ips_error.append(ips_list[i])
+                print(f"{ips_error}:⚠️")
+                #print(f"[{error}]")
+                continue
+            print(f"[{ips_list[i]}]: ✅")
             stdin, stdout, stderr = client.exec_command(self.command)
             for i in stdout:
+                
                 data_bare = stdout.read().decode("ascii").replace("\n", "")
-                create_file.write(data_bare)
-                create_file.close()
+                file_create.write(data_bare)
+                file_create.close()
                 client.close()
 
 
 def run():
     """Runner"""
-    
-    print(f"Host : {os.environ.get('USERNAME')}")
-    print("Set duration=seconds when use monitor !\n")
+    print("Nota : Podrias lanzar un reset a todos los equipos que tengas, cuidado!")
     #path = str(input("[Directory] "))
     password = input("[Password] ")
     command = input("[$] ")
-    SetSsh(command,password).connect_to_ip(GetFiles('ips.txt').open_file_txt())
+    print("\n")
+    SetSsh(command, password).connect_to_ip(
+        GetFiles('ips.txt').open_file_txt())
+
 
 run()
