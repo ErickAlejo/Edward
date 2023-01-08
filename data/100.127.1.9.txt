@@ -1,1 +1,0 @@
-             model: RB4011iGS+          revision: r2     serial-number: FAD30FD319DA     firmware-type: al2  factory-firmware: 6.47.10  current-firmware: 6.47.10  upgrade-firmware: 6.48.6
