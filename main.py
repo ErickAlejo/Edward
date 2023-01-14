@@ -41,6 +41,42 @@ class SetSsh:
                 client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
                 client.connect(ips_list[i], username='admin',
                                password=str(self.password), banner_timeout=200)
+                
+                 # Execute first command
+                data_name = ''
+                stdin, stdout, stderr = client.exec_command(
+                    '/system identity export')
+                for x in stdout:
+                    data_bare = stdout.read().decode("ascii").replace("\n", "").split()
+                    data_conver = data_bare[18].split('name=')
+                    data_name = data_conver[1]
+                    "Create a file to save the information"
+                    path_export = "data"
+                    path_exist_file = os.path.exists(path_export)
+
+                    # Evaluation to create a file with name of edge
+                    if path_exist_file:
+                        file_path = path_export + "/{}.txt"
+                        file_create = open(file_path.format(
+                            data_name), "w+")
+                    else:
+                        os.mkdir(path_export)
+                        file_path = path_export + "/{}.txt"
+                        # create each file of hosts
+                        file_create = open(file_path.format(
+                            ips_list[i]), "w+")
+                    break
+
+                # Execute second command and modifiying session vars
+                stdin, stdout, stderr = client.exec_command(self.command)
+                for y in stdout:
+                    data_bare = stdout.read().decode("ascii").replace("\n", "")
+                    file_create.write(data_bare)
+                    file_create.close()
+                    print(f"[{data_name}  {ips_list[i]}]: ✅")
+                    # Close Connection
+                    client.close()
+            
             except TimeoutError:
                 print(f"[Error Timeo]:\t[{ips_list[i]}]  ⚠️")
                 client.close()
@@ -56,53 +92,23 @@ class SetSsh:
             except Exception as error:
                 ips_error.append(ips_list[i])
                 print(f"[Error Unkno]:\t{ips_error}  ⚠️")
-                # print(f"[{error}]")
+                print(f"[{error}]")
                 continue
-
-            # Execute first command
-            data_name = ''
-            stdin, stdout, stderr = client.exec_command(
-                '/system identity export')
-            for x in stdout:
-                data_bare = stdout.read().decode("ascii").replace("\n", "").split()
-                data_conver = data_bare[9].split('name=')
-                data_name = data_conver[1]
-                "Create a file to save the information"
-                path_export = "data"
-                path_exist_file = os.path.exists(path_export)
-
-                # Evaluation to create a file with name of edge
-                if path_exist_file:
-                    file_path = path_export + "/{}.txt"
-                    file_create = open(file_path.format(
-                        data_name), "w+")
-                else:
-                    os.mkdir(path_export)
-                    file_path = path_export + "/{}.txt"
-                    # create each file of hosts
-                    file_create = open(file_path.format(
-                        ips_list[i]), "w+")
-                break
-
-            # Execute second command and modifiying session vars
-            stdin, stdout, stderr = client.exec_command(self.command)
-            for y in stdout:
-                data_bare = stdout.read().decode("ascii").replace("\n", "")
-                file_create.write(data_bare)
-                file_create.close()
-                print(f"[{data_name}  {ips_list[i]}]: ✅")
-                client.close()
+            except KeyboardInterrupt:
+                print('Bye ...')
 
 
 def run():
-    """Runner"""
-    print("Nota : Cuidado con el comando que uses !!!")
-    #path = str(input("[Directory] "))
-    password = input("[Password] ")
-    command = input("[$] ")
-    print("")
-    SetSsh(command, password).connect_to_ip(
-        GetFiles('ips.txt').open_file_txt())
-
+    try:       
+        """Runner"""
+        print("Nota : Cuidado con el comando que uses !!!")
+        #path = str(input("[Directory] "))
+        password = input("[Password] ")
+        command = input("[$] ")
+        print("")
+        SetSsh(command, password).connect_to_ip(
+            GetFiles('ips.txt').open_file_txt())
+    except KeyboardInterrupt:
+        print('Bye ...')
 
 run()
