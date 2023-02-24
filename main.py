@@ -68,12 +68,16 @@ class SetSsh:
                     break
 
                 # Execute second command and modifiying session vars
-                stdin, stdout, stderr = client.exec_command(self.command)
+                stdin, stdout, stderr = client.exec_command(f'/ip dhcp-server lease pr where mac-address={self.command}')
                 for y in stdout:
                     data_bare = stdout.read().decode("ascii").replace("\n", "")
-                    file_create.write(data_bare)
-                    file_create.close()
-                    print(f"[{data_name}  {ips_list[i]}]: ✅")
+                    if len(data_bare) > 75 :
+                        file_create.write(data_bare)
+                        print(f"[{data_name}  {ips_list[i]}]: {self.command} ✅")
+                        file_create.close()
+                    else:
+                        file_create.close()
+                        print(f"Not Found : {self.command} ❌")    
                     # Close Connection
                     client.close()
             
@@ -104,7 +108,7 @@ def run():
         print("Nota : Cuidado con el comando que uses !!!")
         #path = str(input("[Directory] "))
         password = input("[Password] ")
-        command = input("[$] ")
+        command = input("[Mac-address] ")
         print("")
         SetSsh(command, password).connect_to_ip(
             GetFiles('ips.txt').open_file_txt())
